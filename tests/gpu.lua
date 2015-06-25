@@ -138,6 +138,8 @@ for i = 0,9 do
 	end
 end
 test.evaluate(gpu.getDepth() == 1)
+test.shouldNotError(gpu.setDepth, 1.5)
+test.evaluate(gpu.getDepth() == 1)
 
 -- Resolution tests
 test.evaluate(gpu.setResolution(49, 16) == true)
@@ -150,6 +152,8 @@ local gpuMW,gpuMH = gpu.maxResolution()
 test.shouldError(gpu.setResolution, gpuMW+1, gpuMH)
 test.shouldError(gpu.setResolution, gpuMW, gpuMH+1)
 test.shouldError(gpu.setResolution, gpuMW+1, gpuMH+1)
+gpu.setResolution(50.9,16.8)
+test.valueMatch(table.pack(50,16),gpu.getResolution())
 
 if gpu.maxDepth() > 1 then
 
