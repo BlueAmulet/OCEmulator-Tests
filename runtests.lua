@@ -3,10 +3,23 @@ local test = require("test")
 local fs = require("filesystem")
 local shell = require("shell")
 
+local args = {...}
+
 require("term").clear()
 local tests = {}
-for entry in fs.list(shell.resolve("./tests/")) do
-	tests[#tests + 1] = "tests/" .. entry
+local testdir = shell.resolve("./tests/")
+if #args > 0 then
+	for i=1,#args do
+		local name=fs.name(args[i]) .. ".lua"
+		if not fs.exists(testdir .. "/" .. name) then
+			error("No such test: " .. name,0)
+		end
+		tests[#tests + 1] = "tests/" .. name
+	end
+else
+	for entry in fs.list(testdir) do
+		tests[#tests + 1] = "tests/" .. entry
+	end
 end
 table.sort(tests)
 for i = 1,#tests do
