@@ -5,6 +5,7 @@ if not component.isAvailable("gpu") then
 end
 local test = require("test")
 local unicode = require("unicode")
+local event = require("event")
 local gpu = component.gpu
 
 print("Backing up GPU ...")
@@ -21,6 +22,14 @@ if depth > 1 then
 end
 
 do
+-- Subtly test for screen_resized event.
+local detectedResizedEvent = false
+local function detectResizeEvent()
+	detectedResizedEvent = true
+	return false
+end
+event.listen("screen_resized", detectResizeEvent)
+
 print("Configuring GPU ...")
 gpu.setResolution(50, 16)
 gpu.setForeground(0x1DDDDDD)
@@ -144,7 +153,7 @@ test.evaluate(gpu.getDepth() == 1)
 -- Resolution tests
 test.evaluate(gpu.setResolution(49, 16) == true)
 test.evaluate(gpu.setResolution(50, 16) == true)
-test.evaluate(gpu.setResolution(50, 16) == false)
+test.evaluate(gpu.setResolution(50, 16) == true)
 test.shouldError(gpu.setResolution, 0, 1)
 test.shouldError(gpu.setResolution, 1, 0)
 test.shouldError(gpu.setResolution, 0, 0)
@@ -217,6 +226,10 @@ test.shouldError(gpu.setDepth, 4)
 test.shouldError(gpu.setDepth, 8)
 
 end -- maxDepth() > 1
+
+-- Check if screen_resized event fired
+os.sleep(0.05)
+test.evaluate(detectedResizedEvent)
 end
 
 print("Restoring GPU ...")

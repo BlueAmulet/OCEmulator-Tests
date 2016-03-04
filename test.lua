@@ -96,4 +96,12 @@ function test.log(message)
 	end
 end
 
+function test.logp(message)
+	print(message)
+	if log then
+		log:write(message .. "\n")
+		log:flush()
+	end
+end
+
 return test
