@@ -145,6 +145,8 @@ local function fstest(fs)
 		test.evaluate(fs.exists(testname.."/e/f") == false)
 		-- Test opening a directory for writing
 		test.valueMatch(errgeneric, fs.open(testname, "wb"))
+		-- Cleanup
+		fs.remove(testname)
 	else
 		print("Skipping Read-Write tests")
 		test.log("Filesystem is read-only")
