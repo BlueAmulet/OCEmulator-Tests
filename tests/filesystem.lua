@@ -199,10 +199,10 @@ local function fstest(fs)
 	-- Root and beyond
 	test.evaluate(fs.exists("") == true)
 	test.evaluate(fs.exists(".") == true)
-	test.evaluate(fs.exists("..") == false)
+	test.valueMatch(table.pack(nil, ".."), fs.exists(".."))
 	test.evaluate(fs.isDirectory("") == true)
 	test.evaluate(fs.isDirectory(".") == true)
-	test.evaluate(fs.isDirectory("..") == false)
+	test.valueMatch(table.pack(nil, ".."), fs.isDirectory(".."))
 end
 
 local tmpfs=component.proxy(computer.tmpAddress())

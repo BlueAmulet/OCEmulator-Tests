@@ -73,7 +73,7 @@ test.evaluate(spaces == 50)
 test.evaluate(fg == 50)
 test.evaluate(bg == 50)
 
-local wide = unicode.char(0x2BFF) -- Nothing special about this character
+local wide = unicode.char(0x3000) -- Nothing special about this character
 
 -- Set/Get tests
 gpu.set(1,1,("Hello Wide World"):gsub(" ",wide) .. "")
@@ -114,8 +114,8 @@ test.evaluate(gpu.get(3,2) == " ")
 gpu.set(50,1,"x")
 gpu.fill(50,1,1,1,wide)
 test.evaluate(gpu.get(50,1) == "x")
-test.typeMatch({"nil","string"}, gpu.fill(1, 1, 1, 1, "xx"))
-test.typeMatch({"nil","string"}, gpu.fill(1, 1, 1, 1, string.rep(wide,2)))
+test.valueMatch(table.pack(nil,"invalid fill value"), gpu.fill(1, 1, 1, 1, "xx"))
+test.valueMatch(table.pack(nil,"invalid fill value"), gpu.fill(1, 1, 1, 1, string.rep(wide,2)))
 test.evaluate(gpu.fill(1, 1, 1, 1, "x") == true)
 test.evaluate(gpu.fill(1, 1, 1, 1, wide) == true)
 
@@ -153,7 +153,7 @@ test.evaluate(gpu.getDepth() == 1)
 -- Resolution tests
 test.evaluate(gpu.setResolution(49, 16) == true)
 test.evaluate(gpu.setResolution(50, 16) == true)
-test.evaluate(gpu.setResolution(50, 16) == true)
+test.evaluate(gpu.setResolution(50, 16) == false)
 test.shouldError(gpu.setResolution, 0, 1)
 test.shouldError(gpu.setResolution, 1, 0)
 test.shouldError(gpu.setResolution, 0, 0)

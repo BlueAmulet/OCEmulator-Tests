@@ -1,13 +1,13 @@
 local test = require("test")
 local unicode = require("unicode")
 
-local wide = unicode.char(0x2BFF) -- Nothing special about this character
+local wide = unicode.char(0x3000) -- Nothing special about this character
 
 -- Character tests
 test.evaluate(unicode.char() == "")
 test.evaluate(unicode.char(97,98,99) == "abc")
 test.evaluate(unicode.char(97 + 0x10000) == "a")
-test.evaluate(wide == "\xE2\xAF\xBF")
+test.evaluate(wide == "\xE3\x80\x80")
 local unizero = "\xC0\x80"
 test.evaluate(unicode.char(0) == unizero)
 test.evaluate(unicode.char(0/0) == unizero)
