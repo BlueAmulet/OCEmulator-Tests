@@ -229,7 +229,7 @@ end -- maxDepth() > 1
 
 -- Check if screen_resized event fired
 os.sleep(0.05)
-test.evaluate(detectedResizedEvent)
+test.evaluate(detectedResizedEvent) -- this test is unstable
 end
 
 print("Restoring GPU ...")
