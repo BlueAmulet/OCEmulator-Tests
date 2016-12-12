@@ -29,9 +29,9 @@ test.evaluate(os.date("%X", testtime) == "20:58:12")
 test.evaluate(os.date("%Y", testtime) == "1996")
 test.evaluate(os.date("%a", testtime) == "Sat")
 test.evaluate(os.date("%b", testtime) == "Mar")
-test.evaluate(os.date("%c", testtime) == "Sat Mar 09 20:58:12 1996") -- Technically wrong, '09' should be ' 9'
+test.evaluate(os.date("%c", testtime) == "Sat Mar  9 20:58:12 1996")
 test.evaluate(os.date("%d", testtime) == "09")
-test.evaluate(os.date("%e", testtime) == " 9") -- Broken at values higher than 9
+test.evaluate(os.date("%e", testtime) == " 9")
 test.evaluate(os.date("%h", testtime) == "Mar")
 test.evaluate(os.date("%j", testtime) == "069")
 test.evaluate(os.date("%m", testtime) == "03")
@@ -69,9 +69,6 @@ local nonvalid = "EGJKLNOPQUVWZfgikloqsuvz"
 for i=1, #nonvalid do
 	test.evaluate(os.date("a%"..nonvalid:sub(i,i).."b") == "ab")
 end
-
--- Test bugs
-test.evaluate(os.date("%e", os.time({day=10,month=1,year=1970})) == " 10")
 
 -- Timezone modifier does not work
 test.evaluate(os.date("%c", testtime) == os.date("!%c", testtime))
