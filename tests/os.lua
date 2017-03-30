@@ -76,5 +76,5 @@ test.evaluate(os.date("%c", testtime) == os.date("!%c", testtime))
 -- Check that isdst is not returned
 test.evaluate(os.date("*t").isdst == nil)
 
--- Check for truncation at NUL
-test.evaluate(os.date("abc\0def") == "abc")
+-- Check for no truncation at NUL
+test.evaluate(os.date("abc\0def") == "abc\0def")
