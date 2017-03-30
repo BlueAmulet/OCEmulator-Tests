@@ -24,7 +24,7 @@ end
 table.sort(tests)
 for i = 1,#tests do
 	print("Running " .. tests[i])
-	local fn, err = loadfile(tests[i])
+	local fn, err = loadfile(os.getenv("PWD") .. "/" .. tests[i])
 	if fn then
 		local ok, err = pcall(fn)
 		if not ok then
