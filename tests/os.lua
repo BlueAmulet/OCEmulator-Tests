@@ -3,7 +3,7 @@ local test = require("test")
 -- os.time tests
 
 -- isdst is not supported
-test.evaluate(os.time({day=1,month=1,year=1970,isdst=false}) == os.time({day=1,month=1,year=1970,isdst=true}))
+test.evaluate(os.time({day=1,month=1,year=1970,isdst=true}), os.time, {day=1,month=1,year=1970,isdst=false})
 
 -- os.date tests
 
@@ -13,35 +13,35 @@ test.shouldNotError(os.date, "%i")
 -- Verify valid options format correctly
 local tzoffset = os.time({year=1970,day=1,wday=5,sec=0,yday=1,month=1,min=0,hour=0})
 local testtime = 826405092 + tzoffset
-test.evaluate(os.date("%%") == "%")
-test.evaluate(os.date("%A", testtime) == "Saturday")
-test.evaluate(os.date("%B", testtime) == "March")
-test.evaluate(os.date("%C", testtime) == "19")
-test.evaluate(os.date("%D", testtime) == "03/09/96")
-test.evaluate(os.date("%F", testtime) == "1996-03-09")
-test.evaluate(os.date("%H", testtime) == "20")
-test.evaluate(os.date("%I", testtime) == "08")
-test.evaluate(os.date("%M", testtime) == "58")
-test.evaluate(os.date("%R", testtime) == "20:58")
-test.evaluate(os.date("%S", testtime) == "12")
-test.evaluate(os.date("%T", testtime) == "20:58:12")
-test.evaluate(os.date("%X", testtime) == "20:58:12")
-test.evaluate(os.date("%Y", testtime) == "1996")
-test.evaluate(os.date("%a", testtime) == "Sat")
-test.evaluate(os.date("%b", testtime) == "Mar")
-test.evaluate(os.date("%c", testtime) == "Sat Mar  9 20:58:12 1996")
-test.evaluate(os.date("%d", testtime) == "09")
-test.evaluate(os.date("%e", testtime) == " 9")
-test.evaluate(os.date("%h", testtime) == "Mar")
-test.evaluate(os.date("%j", testtime) == "069")
-test.evaluate(os.date("%m", testtime) == "03")
-test.evaluate(os.date("%n", testtime) == "\n")
-test.evaluate(os.date("%p", testtime) == "PM")
-test.evaluate(os.date("%r", testtime) == "08:58:12 PM")
-test.evaluate(os.date("%t", testtime) == "\t")
-test.evaluate(os.date("%w", testtime) == "6")
-test.evaluate(os.date("%x", testtime) == "03/09/96")
-test.evaluate(os.date("%y", testtime) == "96")
+test.evaluate("%", os.date, "%%")
+test.evaluate("Saturday", os.date, "%A", testtime)
+test.evaluate("March", os.date, "%B", testtime)
+test.evaluate("19", os.date, "%C", testtime)
+test.evaluate("03/09/96", os.date, "%D", testtime)
+test.evaluate("1996-03-09", os.date, "%F", testtime)
+test.evaluate("20", os.date, "%H", testtime)
+test.evaluate("08", os.date, "%I", testtime)
+test.evaluate("58", os.date, "%M", testtime)
+test.evaluate("20:58", os.date, "%R", testtime)
+test.evaluate("12", os.date, "%S", testtime)
+test.evaluate("20:58:12", os.date, "%T", testtime)
+test.evaluate("20:58:12", os.date, "%X", testtime)
+test.evaluate("1996", os.date, "%Y", testtime)
+test.evaluate("Sat", os.date, "%a", testtime)
+test.evaluate("Mar", os.date, "%b", testtime)
+test.evaluate("Sat Mar  9 20:58:12 1996", os.date, "%c", testtime)
+test.evaluate("09", os.date, "%d", testtime)
+test.evaluate(" 9", os.date, "%e", testtime)
+test.evaluate("Mar", os.date, "%h", testtime)
+test.evaluate("069", os.date, "%j", testtime)
+test.evaluate("03", os.date, "%m", testtime)
+test.evaluate("\n", os.date, "%n", testtime)
+test.evaluate("PM", os.date, "%p", testtime)
+test.evaluate("08:58:12 PM", os.date, "%r", testtime)
+test.evaluate("\t", os.date, "%t", testtime)
+test.evaluate("6", os.date, "%w", testtime)
+test.evaluate("03/09/96", os.date, "%x", testtime)
+test.evaluate("96", os.date, "%y", testtime)
 
 -- Garbage arguments do not error
 test.shouldNotError(os.date, nil, testtime)
@@ -56,25 +56,25 @@ test.shouldNotError(os.date, "%c", true)
 test.shouldNotError(os.date, "%c", print)
 
 -- Verify default formatting
-test.evaluate(os.date(nil, testtime) == "09/03/96 20:58:12")
+test.evaluate("09/03/96 20:58:12", os.date, nil, testtime)
 
 -- Numbers are accepted as formatting strings
-test.evaluate(os.date(1234) == "1234")
+test.evaluate("1234", os.date, 1234)
 
 -- Strings are accepted as time
-test.evaluate(os.date("%Y-%m-%d %H:%M:%S", tostring(testtime)) == "1996-03-09 20:58:12")
+test.evaluate("1996-03-09 20:58:12", os.date, "%Y-%m-%d %H:%M:%S", tostring(testtime))
 
 -- Non valid options should all replace with empty strings
 local nonvalid = "EGJKLNOPQUVWZfgikloqsuvz"
 for i=1, #nonvalid do
-	test.evaluate(os.date("a%"..nonvalid:sub(i,i).."b") == "ab")
+	test.evaluate("ab", os.date, "a%"..nonvalid:sub(i,i).."b")
 end
 
 -- Timezone modifier does not work
-test.evaluate(os.date("%c", testtime) == os.date("!%c", testtime))
+test.evaluate(os.date("!%c", testtime), os.date, "%c", testtime)
 
 -- Check that isdst is not returned
-test.evaluate(os.date("*t").isdst == nil)
+test.compare(nil, os.date("*t").isdst)
 
 -- Check for no truncation at NUL
-test.evaluate(os.date("abc\0def") == "abc\0def")
+test.evaluate("abc\0def", os.date, "abc\0def")

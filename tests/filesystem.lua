@@ -40,17 +40,17 @@ local function fstest(fs)
 		test.log("Filesystem is read-write")
 		local errgeneric = table.pack(nil, testname)
 		-- Test makeDirectory's ability to make multiple directories at once
-		test.evaluate(fs.makeDirectory(testname.."/a/b/c") == true)
-		test.evaluate(fs.exists(testname.."/a/b/c") == true)
+		test.evaluate(true, fs.makeDirectory, testname.."/a/b/c")
+		test.evaluate(true, fs.exists, testname.."/a/b/c")
 		-- Test makeDirectory's refusal to create the same thing
-		test.evaluate(fs.makeDirectory(testname.."/a/b/c") == false)
+		test.evaluate(false, fs.makeDirectory, testname.."/a/b/c")
 		-- Test renaming something to an existing thing
 		fs.makeDirectory(testname.."/b")
-		test.evaluate(fs.rename(testname.."/a", testname.."/b") == false)
+		test.evaluate(false, fs.rename, testname.."/a", testname.."/b")
 		-- Test remove's recursive removal ability
-		test.evaluate(fs.remove(testname) == true)
-		test.evaluate(fs.exists(testname.."/a/b/c") == false)
-		test.evaluate(fs.exists(testname) == false)
+		test.evaluate(true, fs.remove, testname)
+		test.evaluate(false, fs.exists, testname.."/a/b/c")
+		test.evaluate(false, fs.exists, testname)
 		-- Test renaming a non existent thing
 		test.valueMatch(errgeneric, fs.rename(testname, testname))
 		-- Test reading a non existent thing
@@ -59,10 +59,10 @@ local function fstest(fs)
 		local testfile, err = fs.open(testname, "w")
 		if testfile then
 			-- Handles are wrapped userdata
-			test.evaluate(type(testfile) == "table")
+			test.evaluate("table", type, testfile)
 			if type(testfile) == "table" then
-				test.evaluate(testfile.type == "userdata")
-				test.evaluate(getmetatable(testfile) == "userdata")
+				test.compare("userdata", testfile.type)
+				test.evaluate("userdata", getmetatable, testfile)
 			elseif type(testfile) == "number" then
 				local msg="Warning: filesystem implementation uses numbers as handles, this is depreciated behaviour."
 				test.logp(msg)
@@ -76,20 +76,20 @@ local function fstest(fs)
 			test.valueMatch(testtbl, fs.seek(testfile, "cur", -1))
 			test.valueMatch(testtbl, fs.seek(testfile, "end", -1))
 			-- Test write increments seek
-			test.evaluate(fs.write(testfile, "test") == true)
-			test.evaluate(fs.seek(testfile, "cur", 0) == 4)
+			test.evaluate(true, fs.write, testfile, "test")
+			test.evaluate(4, fs.seek, testfile, "cur", 0)
 			-- Test seek boundaries
-			test.evaluate(fs.seek(testfile, "set", 0) == 0)
-			test.evaluate(fs.seek(testfile, "set", 4) == 4)
-			test.evaluate(fs.seek(testfile, "cur", -4) == 0)
-			test.evaluate(fs.seek(testfile, "cur", 4) == 4)
-			test.evaluate(fs.seek(testfile, "end", 0) == 4)
-			test.evaluate(fs.seek(testfile, "end", -4) == 0)
+			test.evaluate(0, fs.seek, testfile, "set", 0)
+			test.evaluate(4, fs.seek, testfile, "set", 4)
+			test.evaluate(0, fs.seek, testfile, "cur", -4)
+			test.evaluate(4, fs.seek, testfile, "cur", 4)
+			test.evaluate(4, fs.seek, testfile, "end", 0)
+			test.evaluate(0, fs.seek, testfile, "end", -4)
 			-- Test seeking past
-			test.evaluate(fs.seek(testfile, "set", 5) == 5)
+			test.evaluate(5, fs.seek, testfile, "set", 5)
 			fs.seek(testfile, "set", 3)
-			test.evaluate(fs.seek(testfile, "cur", 2) == 5)
-			test.evaluate(fs.seek(testfile, "end", 1) == 5)
+			test.evaluate(5, fs.seek, testfile, "cur", 2)
+			test.evaluate(5, fs.seek, testfile, "end", 1)
 			-- Test what gets wrote in seeked over data
 			-- Also test that no conversions take place.
 			fs.write(testfile, "bear\r\n\n\r")
@@ -106,43 +106,43 @@ local function fstest(fs)
 				-- Actually test what gets wrote in seeked over data
 				-- Also test that no conversions happen
 				local data=fs.read(testfile, math.huge)
-				test.evaluate(data == "test\0bear\r\n\n\r")
+				test.compare("test\0bear\r\n\n\r", data)
 				-- Test read increments seek
-				test.evaluate(fs.seek(testfile, "cur", 0) == 13)
+				test.evaluate(13, fs.seek, testfile, "cur", 0)
 				-- Check for nil at EOF
-				test.evaluate(fs.read(testfile, math.huge) == nil)
+				test.evaluate(nil, fs.read, testfile, math.huge)
 				-- Unlike writing, can seek before 0
-				test.evaluate(fs.seek(testfile, "set", -1) == -1)
-				test.evaluate(fs.seek(testfile, "cur", -1) == -2)
-				test.evaluate(fs.seek(testfile, "end", -14) == -1)
+				test.evaluate(-1, fs.seek, testfile, "set", -1)
+				test.evaluate(-2, fs.seek, testfile, "cur", -1)
+				test.evaluate(-1, fs.seek, testfile, "end", -14)
 				-- Seek position is a signed integer
-				test.evaluate(fs.seek(testfile, "cur", -math.huge) == 2147483647)
-				test.evaluate(fs.seek(testfile, "cur", -math.huge) == -1)
+				test.evaluate(2147483647, fs.seek, testfile, "cur", -math.huge)
+				test.evaluate(-1, fs.seek, testfile, "cur", -math.huge)
 				-- Negative seeks produce extra \0's
 				data=fs.read(testfile, math.huge)
-				test.evaluate(data == "test\0bear\r\n\n\r\0")
-				test.evaluate(fs.seek(testfile, "cur", 0) == 13)
+				test.compare("test\0bear\r\n\n\r\0", data)
+				test.evaluate(13, fs.seek, testfile, "cur", 0)
 			else
-				test.evaluate(false)
+				test.evaluate(true, false)
 				print("Failed to open file for reading: "..err)
 				test.log("Failed to open file for reading: "..err)
 			end
 			fs.close(testfile)
 			fs.remove(testname)
 		else
-			test.evaluate(false)
+			test.evaluate(true, false)
 			print("Failed to open file for writing: "..err)
 			test.log("Failed to open file for writing: "..err)
 		end
 		-- Test broken rename behaviour
 		fs.makeDirectory(testname)
-		test.evaluate(fs.rename(testname, testname.."/d") == true)
-		test.evaluate(fs.exists(testname) == false)
+		test.evaluate(true, fs.rename, testname, testname.."/d")
+		test.evaluate(false, fs.exists, testname)
 		-- Test for incorrect broken rename behaviour
 		fs.makeDirectory(testname)
-		test.evaluate(fs.rename(testname, testname.."/e/f") == false)
-		test.evaluate(fs.exists(testname) == true)
-		test.evaluate(fs.exists(testname.."/e/f") == false)
+		test.evaluate(false, fs.rename, testname, testname.."/e/f")
+		test.evaluate(true, fs.exists, testname)
+		test.evaluate(false, fs.exists, testname.."/e/f")
 		-- Test opening a directory for writing
 		test.valueMatch(errgeneric, fs.open(testname, "wb"))
 		-- Cleanup
@@ -179,17 +179,17 @@ local function fstest(fs)
 		end
 		-- All makeDirectory calls should fail
 		for i = 1, #list do
-			test.evaluate(fs.makeDirectory(list[i]) == false)
+			test.evaluate(false, fs.makeDirectory, list[i])
 		end
 		-- All rename calls should fail
 		for i = 1, #list do
 			for j = 1, #list do
-				test.evaluate(fs.rename(list[i], list[j]) == false)
+				test.evaluate(false, fs.rename, list[i], list[j])
 			end
 		end
 		-- All remove calls should fail
 		for i = 1, #list do
-			test.evaluate(fs.remove(list[i]) == false)
+			test.evaluate(false, fs.remove, list[i])
 		end
 		-- All attemps to open for writing should fail
 		for i = 1, #list do
@@ -197,16 +197,16 @@ local function fstest(fs)
 		end
 	end
 	-- Root and beyond
-	test.evaluate(fs.exists("") == true)
-	test.evaluate(fs.exists(".") == true)
+	test.evaluate(true, fs.exists, "")
+	test.evaluate(true, fs.exists, ".")
 	test.valueMatch(table.pack(nil, ".."), fs.exists(".."))
-	test.evaluate(fs.isDirectory("") == true)
-	test.evaluate(fs.isDirectory(".") == true)
+	test.evaluate(true, fs.isDirectory, "")
+	test.evaluate(true, fs.isDirectory, ".")
 	test.valueMatch(table.pack(nil, ".."), fs.isDirectory(".."))
 end
 
 local tmpfs=component.proxy(computer.tmpAddress())
-test.evaluate(tmpfs.getLabel() == "tmpfs")
+test.evaluate("tmpfs", tmpfs.getLabel)
 test.shouldError(tmpfs.setLabel, "tmpfs")
 fstest(tmpfs)
 

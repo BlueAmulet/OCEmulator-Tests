@@ -23,9 +23,15 @@ local function failed()
 	log:flush()
 end
 
-function test.evaluate(something)
+function test.evaluate(something, ...)
 	total = total + 1
-	(something and passed or failed)()
+	local ok, val = pcall(...);
+	((ok == true and val == something) and passed or failed)()
+end
+
+function test.compare(something, another)
+	total = total + 1
+	((something == another) and passed or failed)()
 end
 
 function test.shouldError(...)

@@ -45,13 +45,13 @@ test.log(string.format("If your current monochrome color is not %06X, please cha
 -- Foreground and Background tests
 local color
 color = gpu.setForeground(0xABCDEF)
-test.evaluate(color == 0x1DDDDDD)
+test.compare(0x1DDDDDD, color)
 color = gpu.getForeground()
-test.evaluate(color == 0xABCDEF)
+test.compare(0xABCDEF, color)
 color = gpu.setBackground(0x000000)
-test.evaluate(color == 0x1234567)
+test.compare(0x1234567, color)
 color = gpu.getBackground()
-test.evaluate(color == 0x000000)
+test.compare(0x000000, color)
 
 gpu.fill(1,1,50,16," ")
 local spaces = 0
@@ -69,28 +69,28 @@ for x = 1,50 do
 		bg = bg + 1
 	end
 end
-test.evaluate(spaces == 50)
-test.evaluate(fg == 50)
-test.evaluate(bg == 50)
+test.compare(50, spaces)
+test.compare(50, fg)
+test.compare(50, bg)
 
 local wide = unicode.char(0x3000) -- Nothing special about this character
 
 -- Set/Get tests
 gpu.set(1,1,("Hello Wide World"):gsub(" ",wide) .. "")
-test.evaluate(gpu.get(18,1) == "d")
+test.evaluate("d", gpu.get, 18,1)
 gpu.set(1,1,("Hello There"):gsub(" ",wide) .. "",true)
-test.evaluate(gpu.get(1,11) == "e")
+test.evaluate("e", gpu.get, 1,11)
 gpu.set(7,1,"x")
-test.evaluate(gpu.get(7,1) == " ")
+test.evaluate(" ", gpu.get, 7,1)
 gpu.set(6,1," x")
-test.evaluate(gpu.get(7,1) == "x")
+test.evaluate("x", gpu.get, 7,1)
 gpu.set(6,1,wide)
-test.evaluate(gpu.get(7,1) == " ")
+test.evaluate(" ", gpu.get, 7,1)
 gpu.set(50,1,"x")
 gpu.set(50,1,wide)
-test.evaluate(gpu.get(50,1) == "x")
-test.evaluate(gpu.set(1.63,1.34,"r") == true)
-test.evaluate(gpu.get(1.99,1.99) == "r")
+test.evaluate("x", gpu.get, 50,1)
+test.evaluate(true, gpu.set, 1.63,1.34,"r")
+test.evaluate("r", gpu.get, 1.99,1.99)
 test.shouldError(gpu.get, 0, 1)
 test.shouldError(gpu.get, 51, 1)
 test.shouldError(gpu.get, 1, 0)
@@ -101,59 +101,59 @@ test.valueMatch(table.pack("r",monochrome,0,nil,nil), gpu.get(1, 1))
 -- Fill tests
 gpu.fill(1,1,50,16," ")
 gpu.fill(2,2,6,7,"x")
-test.evaluate(gpu.get(2,2) == "x")
-test.evaluate(gpu.get(7,2) == "x")
-test.evaluate(gpu.get(2,8) == "x")
-test.evaluate(gpu.get(7,8) == "x")
+test.evaluate("x", gpu.get, 2,2)
+test.evaluate("x", gpu.get, 7,2)
+test.evaluate("x", gpu.get, 2,8)
+test.evaluate("x", gpu.get, 7,8)
 gpu.fill(2,2,6,7,wide)
-test.evaluate(gpu.get(2,2) == wide)
-test.evaluate(gpu.get(12,2) == wide)
-test.evaluate(gpu.get(2,8) == wide)
-test.evaluate(gpu.get(12,8) == wide)
-test.evaluate(gpu.get(3,2) == " ")
+test.evaluate(wide, gpu.get, 2,2)
+test.evaluate(wide, gpu.get, 12,2)
+test.evaluate(wide, gpu.get, 2,8)
+test.evaluate(wide, gpu.get, 12,8)
+test.evaluate(" ", gpu.get, 3,2)
 gpu.set(50,1,"x")
 gpu.fill(50,1,1,1,wide)
-test.evaluate(gpu.get(50,1) == "x")
+test.evaluate("x", gpu.get, 50,1)
 test.valueMatch(table.pack(nil,"invalid fill value"), gpu.fill(1, 1, 1, 1, "xx"))
 test.valueMatch(table.pack(nil,"invalid fill value"), gpu.fill(1, 1, 1, 1, string.rep(wide,2)))
-test.evaluate(gpu.fill(1, 1, 1, 1, "x") == true)
-test.evaluate(gpu.fill(1, 1, 1, 1, wide) == true)
+test.evaluate(true, gpu.fill, 1, 1, 1, 1, "x")
+test.evaluate(true, gpu.fill, 1, 1, 1, 1, wide)
 
 -- Copy tests
 gpu.copy(4,2,9,7,-1,0)
-test.evaluate(gpu.get(3,2) == wide)
-test.evaluate(gpu.get(12,2) == " ")
-test.evaluate(gpu.get(13,2) == " ")
+test.evaluate(wide, gpu.get, 3,2)
+test.evaluate(" ", gpu.get, 12,2)
+test.evaluate(" ", gpu.get, 13,2)
 gpu.fill(2,2,6,7,wide)
 gpu.copy(2,2,12,7,1,0)
-test.evaluate(gpu.get(3,2) == wide)
-test.evaluate(gpu.get(12,2) == " ")
-test.evaluate(gpu.get(13,2) == wide)
+test.evaluate(wide, gpu.get, 3,2)
+test.evaluate(" ", gpu.get, 12,2)
+test.evaluate(wide, gpu.get, 13,2)
 gpu.set(50,1,"x")
-gpu.copy(2,2,1,1,48,-1)
+test.shouldNotError(gpu.copy, 2,2,1,1,48,-1)
 -- You will see an x, but be told it's the wide character
-test.evaluate(gpu.get(50,1) == wide)
-test.evaluate(gpu.copy(-3423, 34536, 4395729, -5435, 0, 0) == true)
+test.evaluate(wide, gpu.get, 50,1)
+test.evaluate(true, gpu.copy, -3423, 34536, 4395729, -5435, 0, 0)
 
 -- Palette tests
 test.shouldError(gpu.setForeground, monochrome, true)
 test.shouldError(gpu.setBackground, 0x000000, true)
 
 -- Depth tests
-test.evaluate(gpu.getDepth() == 1)
+test.evaluate(1, gpu.getDepth)
 for i = 0,9 do
 	if i ~= 1 and i ~= 4 and i ~= 8 then
 		test.shouldError(gpu.setDepth, i)
 	end
 end
-test.evaluate(gpu.getDepth() == 1)
+test.evaluate(1, gpu.getDepth)
 test.shouldNotError(gpu.setDepth, 1.5)
-test.evaluate(gpu.getDepth() == 1)
+test.evaluate(1, gpu.getDepth)
 
 -- Resolution tests
-test.evaluate(gpu.setResolution(49, 16) == true)
-test.evaluate(gpu.setResolution(50, 16) == true)
-test.evaluate(gpu.setResolution(50, 16) == false)
+test.evaluate(true, gpu.setResolution, 49, 16)
+test.evaluate(true, gpu.setResolution, 50, 16)
+test.evaluate(false, gpu.setResolution, 50, 16)
 test.shouldError(gpu.setResolution, 0, 1)
 test.shouldError(gpu.setResolution, 1, 0)
 test.shouldError(gpu.setResolution, 0, 0)
@@ -167,23 +167,23 @@ test.valueMatch(table.pack(50,16),gpu.getResolution())
 if gpu.maxDepth() > 1 then
 
 -- Tier 2 tests
-test.evaluate(gpu.setDepth(4) == "OneBit")
+test.evaluate("OneBit", gpu.setDepth, 4)
 -- Palette Tests
 for i = 0,15 do
 	gpu.setPaletteColor(i,i)
 end
-test.evaluate(gpu.setDepth(1) == "FourBit")
+test.evaluate("FourBit", gpu.setDepth, 1)
 gpu.setDepth(4) -- Changing depth will change the palette
 local t2pal = {[0]=0xFFFFFF,0xFFCC33,0xCC66CC,0x6699FF,0xFFFF33,0x33CC33,0xFF6699,0x333333,0xCCCCCC,0x336699,0x9933CC,0x333399,0x663300,0x336600,0xFF3333,0x000000}
 for i = 0,15 do
-	test.evaluate(gpu.getPaletteColor(i) == t2pal[i])
+	test.evaluate(t2pal[i], gpu.getPaletteColor, i)
 end
 test.shouldError(gpu.getPaletteColor, -1)
 test.shouldError(gpu.getPaletteColor, 16)
 test.shouldError(gpu.setPaletteColor, -1, 0)
 test.shouldError(gpu.setPaletteColor, 16, 0)
 gpu.setPaletteColor(0,0xFEDCBA)
-test.evaluate(gpu.setPaletteColor(0,0xFFFFFF) == 0xFEDCBA)
+test.evaluate(0xFEDCBA, gpu.setPaletteColor, 0,0xFFFFFF)
 gpu.setForeground(0, true)
 test.valueMatch(table.pack(0, true), gpu.getForeground())
 gpu.setBackground(15, true)
@@ -207,7 +207,7 @@ if gpu.maxDepth() > 4 then
 -- Tier 3 tests
 gpu.setDepth(8)
 for i = 0,15 do
-	test.evaluate(gpu.getPaletteColor(i) == (i+1)*0x0F0F0F)
+	test.evaluate((i+1)*0x0F0F0F, gpu.getPaletteColor, i)
 end
 gpu.setBackground(0x002440)
 gpu.setForeground(0xFFDBBF)
@@ -229,7 +229,7 @@ end -- maxDepth() > 1
 
 -- Check if screen_resized event fired
 os.sleep(0.05)
-test.evaluate(detectedResizedEvent) -- this test is unstable
+test.compare(true, detectedResizedEvent) -- this test is unstable
 end
 
 print("Restoring GPU ...")
