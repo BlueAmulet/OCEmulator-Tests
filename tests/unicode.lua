@@ -34,13 +34,13 @@ test.evaluate(3, unicode.len, string.rep(wide,3))
 test.evaluate(6, unicode.len, string.rep("X" .. wide,3))
 test.evaluate(7, unicode.len, "RATED\0X")
 
--- Unifont length tests
+-- Unicode length tests
 test.evaluate(3, unicode.wlen, string.rep("X",3))
 test.evaluate(6, unicode.wlen, string.rep(wide,3))
 test.evaluate(9, unicode.wlen, string.rep("X" .. wide,3))
 test.evaluate(7, unicode.wlen, "RATED\0X")
 
--- Unifont truncation tests
+-- Unicode truncation tests
 test.evaluate("", unicode.wtrunc, "ABCDEFG",-7)
 test.evaluate("", unicode.wtrunc, "ABCDEFG",0)
 test.evaluate("", unicode.wtrunc, "ABCDEFG",1)
