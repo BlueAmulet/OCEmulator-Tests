@@ -96,7 +96,7 @@ test.shouldError(gpu.get, 51, 1)
 test.shouldError(gpu.get, 1, 0)
 test.shouldError(gpu.get, 1, 17)
 test.shouldNotError(gpu.get, 50.99, 1)
-test.valueMatch(table.pack("r",monochrome,0,nil,nil), gpu.get(1, 1))
+test.valueMatch(table.pack("r", monochrome, 0, nil, nil), gpu.get, 1, 1)
 
 -- Fill tests
 gpu.fill(1,1,50,16," ")
@@ -114,8 +114,8 @@ test.evaluate(" ", gpu.get, 3,2)
 gpu.set(50,1,"x")
 gpu.fill(50,1,1,1,wide)
 test.evaluate("x", gpu.get, 50,1)
-test.valueMatch(table.pack(nil,"invalid fill value"), gpu.fill(1, 1, 1, 1, "xx"))
-test.valueMatch(table.pack(nil,"invalid fill value"), gpu.fill(1, 1, 1, 1, string.rep(wide,2)))
+test.valueMatch(table.pack(nil, "invalid fill value"), gpu.fill, 1, 1, 1, 1, "xx")
+test.valueMatch(table.pack(nil, "invalid fill value"), gpu.fill, 1, 1, 1, 1, string.rep(wide, 2))
 test.evaluate(true, gpu.fill, 1, 1, 1, 1, "x")
 test.evaluate(true, gpu.fill, 1, 1, 1, 1, wide)
 
@@ -162,7 +162,7 @@ test.shouldError(gpu.setResolution, gpuMW+1, gpuMH)
 test.shouldError(gpu.setResolution, gpuMW, gpuMH+1)
 test.shouldError(gpu.setResolution, gpuMW+1, gpuMH+1)
 gpu.setResolution(50.9,16.8)
-test.valueMatch(table.pack(50,16),gpu.getResolution())
+test.valueMatch(table.pack(50, 16), gpu.getResolution)
 
 if gpu.maxDepth() > 1 then
 
@@ -185,23 +185,23 @@ test.shouldError(gpu.setPaletteColor, 16, 0)
 gpu.setPaletteColor(0,0xFEDCBA)
 test.evaluate(0xFEDCBA, gpu.setPaletteColor, 0,0xFFFFFF)
 gpu.setForeground(0, true)
-test.valueMatch(table.pack(0, true), gpu.getForeground())
+test.valueMatch(table.pack(0, true), gpu.getForeground)
 gpu.setBackground(15, true)
-test.valueMatch(table.pack(15, true), gpu.getBackground())
+test.valueMatch(table.pack(15, true), gpu.getBackground)
 gpu.fill(1,1,50,16," ")
-test.valueMatch(table.pack(" ", 0xFFFFFF, 0, 0, 15),gpu.get(1,1))
+test.valueMatch(table.pack(" ", 0xFFFFFF, 0, 0, 15), gpu.get, 1, 1)
 gpu.setBackground(0x000000)
 gpu.setForeground(0xFFCC33)
 gpu.set(1,1,"x")
-test.valueMatch(table.pack("x", 0xFFCC33, 0, 1, 15),gpu.get(1,1))
+test.valueMatch(table.pack("x", 0xFFCC33, 0, 1, 15), gpu.get, 1, 1)
 gpu.setPaletteColor(1,0xFEDCBA)
-test.valueMatch(table.pack("x", 0xFEDCBA, 0, 1, 15),gpu.get(1,1))
+test.valueMatch(table.pack("x", 0xFEDCBA, 0, 1, 15), gpu.get, 1, 1)
 gpu.setForeground(0xCCCCCC)
-test.valueMatch(table.pack(0xCCCCCC, false), gpu.getForeground())
+test.valueMatch(table.pack(0xCCCCCC, false), gpu.getForeground)
 gpu.setBackground(0x333333)
-test.valueMatch(table.pack(0x333333, false), gpu.getBackground())
+test.valueMatch(table.pack(0x333333, false), gpu.getBackground)
 gpu.setDepth(1) -- Changing depth will also decolor the screen
-test.valueMatch(table.pack("x", monochrome, 0, nil, nil),gpu.get(1,1))
+test.valueMatch(table.pack("x", monochrome, 0, nil, nil), gpu.get, 1, 1)
 if gpu.maxDepth() > 4 then
 
 -- Tier 3 tests
@@ -212,7 +212,7 @@ end
 gpu.setBackground(0x002440)
 gpu.setForeground(0xFFDBBF)
 gpu.set(1,1,"x")
-test.valueMatch(table.pack("x", 0xFFDBBF, 0x002440, nil, nil),gpu.get(1,1))
+test.valueMatch(table.pack("x", 0xFFDBBF, 0x002440, nil, nil), gpu.get, 1, 1)
 
 else -- maxDepth() == 4
 

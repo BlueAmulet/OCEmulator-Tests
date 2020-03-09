@@ -36,5 +36,5 @@ for i = 1,#tests do
 		test.log("Could not run " .. tests[i] .. "\n" .. err)
 	end
 end
-print(string.format("%d tests, %d passed, %d failed", test.getTotal(), test.getPassed(), test.getFailed()))
+print(string.format("%d tests, %d passed, %d failed, %d errors", test.getTotal(), test.getPassed(), test.getFailed(), test.getErrors()))
 print("Check log.txt for more information")

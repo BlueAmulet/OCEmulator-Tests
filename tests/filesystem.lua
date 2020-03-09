@@ -52,9 +52,9 @@ local function fstest(fs)
 		test.evaluate(false, fs.exists, testname.."/a/b/c")
 		test.evaluate(false, fs.exists, testname)
 		-- Test renaming a non existent thing
-		test.valueMatch(errgeneric, fs.rename(testname, testname))
+		test.valueMatch(errgeneric, fs.rename, testname, testname)
 		-- Test reading a non existent thing
-		test.valueMatch(errgeneric, fs.open(testname, "rb"))
+		test.valueMatch(errgeneric, fs.open, testname, "rb")
 		-- Various tests on file handles
 		local testfile, err = fs.open(testname, "w")
 		if testfile then
@@ -69,12 +69,12 @@ local function fstest(fs)
 			end
 			-- Cannot read a write handle
 			local baddesc = table.pack(nil, "bad file descriptor")
-			test.valueMatch(baddesc, fs.read(testfile, 0))
+			test.valueMatch(baddesc, fs.read, testfile, 0)
 			-- Cannot seek before 0
 			local testtbl = table.pack(nil, "invalid offset")
-			test.valueMatch(testtbl, fs.seek(testfile, "set", -1))
-			test.valueMatch(testtbl, fs.seek(testfile, "cur", -1))
-			test.valueMatch(testtbl, fs.seek(testfile, "end", -1))
+			test.valueMatch(testtbl, fs.seek, testfile, "set", -1)
+			test.valueMatch(testtbl, fs.seek, testfile, "cur", -1)
+			test.valueMatch(testtbl, fs.seek, testfile, "end", -1)
 			-- Test write increments seek
 			test.evaluate(true, fs.write, testfile, "test")
 			test.evaluate(4, fs.seek, testfile, "cur", 0)
@@ -95,14 +95,14 @@ local function fstest(fs)
 			fs.write(testfile, "bear\r\n\n\r")
 			fs.close(testfile)
 			-- Test using a closed file handle.
-			test.valueMatch(baddesc, fs.close(testfile))
-			test.valueMatch(baddesc, fs.read(testfile, 0))
-			test.valueMatch(baddesc, fs.write(testfile, ""))
-			test.valueMatch(baddesc, fs.seek(testfile, "set", 0))
+			test.valueMatch(baddesc, fs.close, testfile)
+			test.valueMatch(baddesc, fs.read, testfile, 0)
+			test.valueMatch(baddesc, fs.write, testfile, "")
+			test.valueMatch(baddesc, fs.seek, testfile, "set", 0)
 			testfile, err = fs.open(testname, "rb")
 			if testfile then
 				-- Cannot write a read handle
-				test.valueMatch(baddesc, fs.write(testfile, ""))
+				test.valueMatch(baddesc, fs.write, testfile, "")
 				-- Actually test what gets wrote in seeked over data
 				-- Also test that no conversions happen
 				local data=fs.read(testfile, math.huge)
@@ -144,7 +144,7 @@ local function fstest(fs)
 		test.evaluate(true, fs.exists, testname)
 		test.evaluate(false, fs.exists, testname.."/e/f")
 		-- Test opening a directory for writing
-		test.valueMatch(errgeneric, fs.open(testname, "wb"))
+		test.valueMatch(errgeneric, fs.open, testname, "wb")
 		-- Cleanup
 		fs.remove(testname)
 	else
@@ -193,16 +193,16 @@ local function fstest(fs)
 		end
 		-- All attemps to open for writing should fail
 		for i = 1, #list do
-			test.valueMatch(table.pack(nil, list[i]), fs.open(list[i], "wb"))
+			test.valueMatch(table.pack(nil, list[i]), fs.open, list[i], "wb")
 		end
 	end
 	-- Root and beyond
 	test.evaluate(true, fs.exists, "")
 	test.evaluate(true, fs.exists, ".")
-	test.valueMatch(table.pack(nil, ".."), fs.exists(".."))
+	test.valueMatch(table.pack(nil, ".."), fs.exists, "..")
 	test.evaluate(true, fs.isDirectory, "")
 	test.evaluate(true, fs.isDirectory, ".")
-	test.valueMatch(table.pack(nil, ".."), fs.isDirectory(".."))
+	test.valueMatch(table.pack(nil, ".."), fs.isDirectory, "..")
 end
 
 local tmpfs=component.proxy(computer.tmpAddress())
