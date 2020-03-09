@@ -1,6 +1,6 @@
 local component=require("component")
 if not component.isAvailable("gpu") then
-	print("Skipping gpu tests")
+	test.logp("Skipping gpu tests")
 	return
 end
 local test=require("test")

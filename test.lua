@@ -106,6 +106,17 @@ function test.pause()
 	while select(3, event.pull("key_down")) ~= 13 do end
 end
 
+function test.input()
+	while true do
+		local code=select(4, event.pull("key_down"))
+		if code == 49 then -- N
+			return false
+		elseif code == 21 then -- Y
+			return true
+		end
+	end
+end
+
 function test.getTotal()
 	if log then
 		log:write(string.format("%d tests, %d passed, %d failed, %d errors\n", total, pass, total - pass - errors, errors))

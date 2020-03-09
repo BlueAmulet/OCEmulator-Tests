@@ -4,14 +4,9 @@ local event=require("event")
 -- Put disclaimer and Y/N
 print("Warning, these filesystem tests could potentially destroy your entire computer if your filesystem implementation is garbage, I take no responsibilities if you lose data.")
 print("Continue? [Y/N]")
-while true do
-	local code=select(4, event.pull("key_down"))
-	if code == 49 then -- N
-		test.log("User skipped filesystem tests")
-		return
-	elseif code == 21 then -- Y
-		break
-	end
+if not test.input() then
+	test.log("User skipped filesystem tests")
+	return
 end
 
 local computer=require("computer")
