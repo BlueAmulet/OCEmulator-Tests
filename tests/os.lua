@@ -1,9 +1,9 @@
-local test = require("test")
+local test=require("test")
 
 -- os.time tests
 
 -- isdst is not supported
-test.evaluate(os.time({day=1,month=1,year=1970,isdst=true}), os.time, {day=1,month=1,year=1970,isdst=false})
+test.evaluate(os.time({day=1, month=1, year=1970, isdst=true}), os.time, {day=1, month=1, year=1970, isdst=false})
 
 -- os.date tests
 
@@ -11,8 +11,8 @@ test.evaluate(os.time({day=1,month=1,year=1970,isdst=true}), os.time, {day=1,mon
 test.shouldNotError(os.date, "%i")
 
 -- Verify valid options format correctly
-local tzoffset = os.time({year=1970,day=1,wday=5,sec=0,yday=1,month=1,min=0,hour=0})
-local testtime = 826405092 + tzoffset
+local tzoffset=os.time({year=1970, day=1, wday=5, sec=0, yday=1, month=1, min=0, hour=0})
+local testtime=826405092 + tzoffset
 test.evaluate("%", os.date, "%%")
 test.evaluate("Saturday", os.date, "%A", testtime)
 test.evaluate("March", os.date, "%B", testtime)
@@ -65,9 +65,9 @@ test.evaluate("1234", os.date, 1234)
 test.evaluate("1996-03-09 20:58:12", os.date, "%Y-%m-%d %H:%M:%S", tostring(testtime))
 
 -- Non valid options should all replace with empty strings
-local nonvalid = "EGJKLNOPQUVWZfgikloqsuvz"
+local nonvalid="EGJKLNOPQUVWZfgikloqsuvz"
 for i=1, #nonvalid do
-	test.evaluate("ab", os.date, "a%"..nonvalid:sub(i,i).."b")
+	test.evaluate("ab", os.date, "a%"..nonvalid:sub(i, i).."b")
 end
 
 -- Timezone modifier does not work

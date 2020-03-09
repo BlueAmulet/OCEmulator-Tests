@@ -1,11 +1,11 @@
-local test = require("test")
-local event = require("event")
+local test=require("test")
+local event=require("event")
 
 -- Put disclaimer and Y/N
 print("Warning, these filesystem tests could potentially destroy your entire computer if your filesystem implementation is garbage, I take no responsibilities if you lose data.")
 print("Continue? [Y/N]")
 while true do
-	local code = select(4,event.pull("key_down"))
+	local code=select(4, event.pull("key_down"))
 	if code == 49 then -- N
 		test.log("User skipped filesystem tests")
 		return
@@ -14,8 +14,8 @@ while true do
 	end
 end
 
-local computer = require("computer")
-local component = require("component")
+local computer=require("computer")
+local component=require("component")
 
 -- We put the tests into a function to be able to test multiple filesystems
 -- It's possible that tmpfs is bugged but the disk isn't, or vice versa.
@@ -26,8 +26,8 @@ local function fstest(fs)
 	local testname
 	while true do
 		local str=""
-		for i=1,8 do
-			str=str..string.char(math.random(97,122))
+		for i=1, 8 do
+			str=str..string.char(math.random(97, 122))
 		end
 		if not fs.exists(str) then
 			testname=str
@@ -38,7 +38,7 @@ local function fstest(fs)
 	if rw then
 		print("Skipping Read-Only tests")
 		test.log("Filesystem is read-write")
-		local errgeneric = table.pack(nil, testname)
+		local errgeneric=table.pack(nil, testname)
 		-- Test makeDirectory's ability to make multiple directories at once
 		test.evaluate(true, fs.makeDirectory, testname.."/a/b/c")
 		test.evaluate(true, fs.exists, testname.."/a/b/c")
@@ -56,7 +56,7 @@ local function fstest(fs)
 		-- Test reading a non existent thing
 		test.valueMatch(errgeneric, fs.open, testname, "rb")
 		-- Various tests on file handles
-		local testfile, err = fs.open(testname, "w")
+		local testfile, err=fs.open(testname, "w")
 		if testfile then
 			-- Handles are wrapped userdata
 			test.evaluate("table", type, testfile)
@@ -68,10 +68,10 @@ local function fstest(fs)
 				test.logp(msg)
 			end
 			-- Cannot read a write handle
-			local baddesc = table.pack(nil, "bad file descriptor")
+			local baddesc=table.pack(nil, "bad file descriptor")
 			test.valueMatch(baddesc, fs.read, testfile, 0)
 			-- Cannot seek before 0
-			local testtbl = table.pack(nil, "invalid offset")
+			local testtbl=table.pack(nil, "invalid offset")
 			test.valueMatch(testtbl, fs.seek, testfile, "set", -1)
 			test.valueMatch(testtbl, fs.seek, testfile, "cur", -1)
 			test.valueMatch(testtbl, fs.seek, testfile, "end", -1)
@@ -99,7 +99,7 @@ local function fstest(fs)
 			test.valueMatch(baddesc, fs.read, testfile, 0)
 			test.valueMatch(baddesc, fs.write, testfile, "")
 			test.valueMatch(baddesc, fs.seek, testfile, "set", 0)
-			testfile, err = fs.open(testname, "rb")
+			testfile, err=fs.open(testname, "rb")
 			if testfile then
 				-- Cannot write a read handle
 				test.valueMatch(baddesc, fs.write, testfile, "")
@@ -153,12 +153,12 @@ local function fstest(fs)
 		-- Find a file and a directory to test with
 		local list=fs.list("/")
 		local testfile, testdir
-		for i = 1,list.n do
+		for i=1, list.n do
 			if not testfile and list[i]:sub(-1) ~= "/" then
-				testfile = list[i]
+				testfile=list[i]
 			end
 			if not testdir and list[i]:sub(-1) == "/" then
-				testdir = list[i]:sub(1,-2)
+				testdir=list[i]:sub(1, -2)
 			end
 			if testfile and testdir then
 				break
@@ -178,21 +178,21 @@ local function fstest(fs)
 			test.log("No directories found on filesystem")
 		end
 		-- All makeDirectory calls should fail
-		for i = 1, #list do
+		for i=1, #list do
 			test.evaluate(false, fs.makeDirectory, list[i])
 		end
 		-- All rename calls should fail
-		for i = 1, #list do
-			for j = 1, #list do
+		for i=1, #list do
+			for j=1, #list do
 				test.evaluate(false, fs.rename, list[i], list[j])
 			end
 		end
 		-- All remove calls should fail
-		for i = 1, #list do
+		for i=1, #list do
 			test.evaluate(false, fs.remove, list[i])
 		end
 		-- All attemps to open for writing should fail
-		for i = 1, #list do
+		for i=1, #list do
 			test.valueMatch(table.pack(nil, list[i]), fs.open, list[i], "wb")
 		end
 	end
@@ -217,7 +217,7 @@ fstest(tmpfs)
 local roaddr
 for addr in component.list("filesystem", true) do
 	if component.proxy(addr).isReadOnly() then
-		roaddr = addr
+		roaddr=addr
 		break
 	end
 end

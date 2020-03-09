@@ -1,32 +1,32 @@
-package.loaded["test"] = dofile(package.searchpath("test","./?.lua"))
-local test = require("test")
-local fs = require("filesystem")
-local shell = require("shell")
+package.loaded["test"]=dofile(package.searchpath("test", "./?.lua"))
+local test=require("test")
+local fs=require("filesystem")
+local shell=require("shell")
 
-local args = {...}
+local args={...}
 
 require("term").clear()
-local tests = {}
-local testdir = shell.resolve("./tests/")
+local tests={}
+local testdir=shell.resolve("./tests/")
 if #args > 0 then
-	for i=1,#args do
+	for i=1, #args do
 		local name=fs.name(args[i]) .. ".lua"
 		if not fs.exists(testdir .. "/" .. name) then
-			error("No such test: " .. name,0)
+			error("No such test: " .. name, 0)
 		end
-		tests[#tests + 1] = "tests/" .. name
+		tests[#tests + 1]="tests/" .. name
 	end
 else
 	for entry in fs.list(testdir) do
-		tests[#tests + 1] = "tests/" .. entry
+		tests[#tests + 1]="tests/" .. entry
 	end
 end
 table.sort(tests)
-for i = 1,#tests do
+for i=1, #tests do
 	print("Running " .. tests[i])
-	local fn, err = loadfile(os.getenv("PWD") .. "/" .. tests[i])
+	local fn, err=loadfile(os.getenv("PWD") .. "/" .. tests[i])
 	if fn then
-		local ok, err = pcall(fn)
+		local ok, err=pcall(fn)
 		if not ok then
 			print("Test " .. tests[i] .. " crashed!\n" .. err)
 			test.log("Test " .. tests[i] .. " crashed!\n" .. err)
